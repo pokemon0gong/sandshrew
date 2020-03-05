@@ -7,6 +7,7 @@ class Layout extends StatelessWidget {
     this.floatingActionButton,
   }) : super(key: key);
 
+  static const PROXY_PATH = '/proxy';
   static const SERVERS_PATH = '/servers';
 
   final Widget body;
@@ -46,6 +47,12 @@ class Layout extends StatelessWidget {
       width: 200,
       child: ListView(
         children: <Widget>[
+          ListTile(
+            title: Text('Proxy'),
+            leading: Icon(Icons.vpn_lock),
+            onTap: _isActive(context, PROXY_PATH) ? () {} : () => Navigator.pushNamed(context, PROXY_PATH),
+            selected: _isActive(context, PROXY_PATH),
+          ),
           ListTile(
             title: Text('Servers'),
             leading: Icon(Icons.storage),
