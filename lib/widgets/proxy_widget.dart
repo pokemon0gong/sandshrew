@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sandshrew/models/config_model.dart';
 import 'package:sandshrew/models/server_model.dart';
 
-class MyProxyWidget extends StatefulWidget {
+class MyProxyWidget extends StatelessWidget {
   MyProxyWidget({Key key}) : super(key: key);
-
-  @override
-  _MyProxyWidgetState createState() => _MyProxyWidgetState();
-}
-
-class _MyProxyWidgetState extends State<MyProxyWidget> {
-
-  final proxyModes = [false, false, false];
-  bool isOn = false;
-  num serverIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +13,19 @@ class _MyProxyWidgetState extends State<MyProxyWidget> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text('Status'),
-            Switch(
-              value: isOn, 
-              onChanged: (bool value) {
-                setState(() {
-                  isOn = value;
-                });
+            Text('State'),
+            Consumer<ConfigModel>(
+              builder: (context, config, child) {
+                return Switch(
+                  value: config.state == ProxyState.open, 
+                  onChanged: (bool value) {
+                    if (value) {
+                      config.updateState(ProxyState.open);
+                    } else {
+                      config.updateState(ProxyState.closed);
+                    }
+                  },
+                );
               },
             ),
           ],
@@ -37,24 +34,24 @@ class _MyProxyWidgetState extends State<MyProxyWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text('Mode'),
-            ToggleButtons(
-              isSelected: proxyModes,
-              onPressed: (int index) {
-                setState(() {
-                  for (int buttonIndex = 0; buttonIndex < proxyModes.length; buttonIndex++) {
-                    if (buttonIndex == index) {
-                      proxyModes[buttonIndex] = true;
-                    } else {
-                      proxyModes[buttonIndex] = false;
-                    }
-                  }
-                });
+            Consumer<ConfigModel>(
+              builder: (context, config, child) {
+                return ToggleButtons(
+                  isSelected: <bool>[
+                    config.mode == ProxyMode.auto,
+                    config.mode == ProxyMode.global,
+                    config.mode == ProxyMode.manual,
+                  ],
+                  onPressed: (int index) {
+                    config.updateMode(ProxyMode.values[index]);
+                  },
+                  children: <Widget>[
+                    Tooltip(message: 'Auto Model', child: Icon(Icons.autorenew)),
+                    Tooltip(message: 'Global Model', child: Icon(Icons.golf_course)),
+                    Tooltip(message: 'Manual Model', child: Icon(Icons.hd)),
+                  ],
+                );
               },
-              children: <Widget>[
-                Tooltip(message: 'Auto Model', child: Icon(Icons.autorenew)),
-                Tooltip(message: 'Global Model', child: Icon(Icons.golf_course)),
-                Tooltip(message: 'Manual Model', child: Icon(Icons.hd)),
-              ],
             ),
           ],
         ),
@@ -62,18 +59,16 @@ class _MyProxyWidgetState extends State<MyProxyWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text('Server'),
-            Consumer<ServerModel>(
-              builder: (context, servers, child) {
-                final children = servers.all.asMap().entries.map<DropdownMenuItem<num>>((e) {
-                  return DropdownMenuItem<num>(value: e.key, child: Text(e.value.name),);
+            Consumer2<ServerModel, ConfigModel>(
+              builder: (context, servers, config, child) {
+                final children = servers.all.map<DropdownMenuItem<String>>((s) {
+                  return DropdownMenuItem<String>(value: s.name, child: Text(s.name),);
                 }).toList();
                 return DropdownButton(
-                  value: serverIndex,
+                  value: config.serverName,
                   items: children,
-                  onChanged: (num value) {
-                    setState(() {
-                      serverIndex = value;
-                    });
+                  onChanged: (String value) {
+                    config.updateServer(value);
                   },
                 );
               },

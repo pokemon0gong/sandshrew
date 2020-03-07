@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sandshrew/models/server.dart';
+import 'package:sandshrew/models/config_model.dart';
 import 'package:sandshrew/models/server_model.dart';
 import './pages/home_page.dart';
-import './pages/proxy_page.dart';
-import './pages/servers_page.dart';
 
 SharedPreferences prefs;
 
@@ -34,6 +33,7 @@ class SandshrewApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: ServerModel(prefs)),
+        ChangeNotifierProvider.value(value: ConfigModel(prefs)),
       ],
       child: MaterialApp(
         title: 'Sandshrew',
