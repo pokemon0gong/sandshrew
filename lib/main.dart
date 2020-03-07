@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sandshrew/models/server.dart';
 import 'package:sandshrew/models/server_model.dart';
+import './pages/home_page.dart';
 import './pages/proxy_page.dart';
 import './pages/servers_page.dart';
 
@@ -39,10 +40,9 @@ class SandshrewApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        initialRoute: '/proxy',
+        initialRoute: '/',
         routes: {
-          '/proxy': (context) => ProxyPage(),
-          '/servers': (context) => ServersPage(),
+          '/': (context) => HomePage(),
         },
       ),
     );
